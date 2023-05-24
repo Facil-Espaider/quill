@@ -26,7 +26,12 @@ import { deleteRange } from './keyboard';
 const debug = logger('quill:clipboard');
 
 type Selector = string | Node['TEXT_NODE'] | Node['ELEMENT_NODE'];
-type Matcher = (node: Node, delta: Delta, scroll: ScrollBlot) => Delta;
+type Matcher = (
+  node: Node,
+  delta: Delta,
+  scroll: ScrollBlot,
+  isInsideTable?: Boolean,
+) => Delta;
 
 const CLIPBOARD_CONFIG: [Selector, Matcher][] = [
   [Node.TEXT_NODE, matchText],
@@ -93,6 +98,7 @@ class Clipboard extends Module<ClipboardOptions> {
   convert(
     { html, text }: { html?: string; text?: string },
     formats: Record<string, unknown> = {},
+    isInsideTable = false,
   ) {
     if (formats[CodeBlock.blotName]) {
       return new Delta().insert(text, {
@@ -102,18 +108,38 @@ class Clipboard extends Module<ClipboardOptions> {
     if (!html) {
       return new Delta().insert(text || '');
     }
-    const delta = this.convertHTML(html);
+    const delta = this.convertHTML(html, isInsideTable);
     // Remove trailing newline
     if (
       deltaEndsWith(delta, '\n') &&
       (delta.ops[delta.ops.length - 1].attributes == null || formats.table)
     ) {
       return delta.compose(new Delta().retain(delta.length() - 1).delete(1));
+    } else if (
+      delta.ops.find(
+        op =>
+          op.attributes &&
+          Object.prototype.hasOwnProperty.call(
+            op.attributes,
+            'table_cell_line',
+          ),
+      ) &&
+      isInsideTable
+    ) {
+      for (let i = 0; i < delta.ops.length; i++) {
+        const op = delta.ops[i];
+        if (
+          op.attributes &&
+          Object.prototype.hasOwnProperty.call(op.attributes, 'table_cell_line')
+        ) {
+          op.attributes['table_cell_line'] = formats['table_cell_line'];
+        }
+      }
     }
     return delta;
   }
 
-  convertHTML(html: string) {
+  convertHTML(html: string, isInsideTable = false) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     const container = doc.body;
     const nodeMatches = new WeakMap();
@@ -127,6 +153,7 @@ class Clipboard extends Module<ClipboardOptions> {
       elementMatchers,
       textMatchers,
       nodeMatches,
+      isInsideTable,
     );
   }
 
@@ -197,12 +224,14 @@ class Clipboard extends Module<ClipboardOptions> {
 
   onPaste(range: Range, { text, html }: { text: string; html: string }) {
     const formats = this.quill.getFormat(range.index);
-    const pastedDelta = this.convert({ text, html }, formats);
+    const isInsideTable = formats['table_cell_line'];
+    const pastedDelta = this.convert({ text, html }, formats, isInsideTable);
     debug.log('onPaste', pastedDelta, { text, html });
     const delta = new Delta()
       .retain(range.index)
       .delete(range.length)
       .concat(pastedDelta);
+
     this.quill.updateContents(delta, Quill.sources.USER);
     // range.length contributes to delta.length()
     this.quill.setSelection(
@@ -339,11 +368,12 @@ function traverse(
   elementMatchers: Matcher[],
   textMatchers: Matcher[],
   nodeMatches: WeakMap<Node, Matcher[]>,
+  isInsideTable: boolean = false,
 ) {
   // Post-order
   if (node.nodeType === node.TEXT_NODE) {
     return textMatchers.reduce((delta: Delta, matcher) => {
-      return matcher(node, delta, scroll);
+      return matcher(node, delta, scroll, isInsideTable);
     }, new Delta());
   }
   if (node.nodeType === node.ELEMENT_NODE) {
@@ -354,14 +384,20 @@ function traverse(
         elementMatchers,
         textMatchers,
         nodeMatches,
+        isInsideTable,
       );
       if (childNode.nodeType === node.ELEMENT_NODE) {
         childrenDelta = elementMatchers.reduce((reducedDelta, matcher) => {
-          return matcher(childNode as HTMLElement, reducedDelta, scroll);
+          return matcher(
+            childNode as HTMLElement,
+            reducedDelta,
+            scroll,
+            isInsideTable,
+          );
         }, childrenDelta);
         childrenDelta = (nodeMatches.get(childNode) || []).reduce(
           (reducedDelta, matcher) => {
-            return matcher(childNode, reducedDelta, scroll);
+            return matcher(childNode, reducedDelta, scroll, isInsideTable);
           },
           childrenDelta,
         );

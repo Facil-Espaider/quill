@@ -29,6 +29,6 @@
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "no-use-before-define": ["error", { "functions": false, "classes": false }],
-    "prettier/prettier": "error"
+    "prettier/prettier": "error" //off
   }
 }
