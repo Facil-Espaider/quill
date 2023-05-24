@@ -7,7 +7,7 @@ function debug(method: string, ...args: unknown[]) {
   }
 }
 
-function namespace(ns: string): Record<typeof levels[number], typeof debug> {
+function namespace(ns: string): Record<(typeof levels)[number], typeof debug> {
   return levels.reduce((logger, method) => {
     logger[method] = debug.bind(console, method, ns);
     return logger;
