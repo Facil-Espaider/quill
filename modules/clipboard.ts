@@ -231,8 +231,9 @@ class Clipboard extends Module<ClipboardOptions> {
       .retain(range.index)
       .delete(range.length)
       .concat(pastedDelta);
-
+    this.setPastingVariable(true);
     this.quill.updateContents(delta, Quill.sources.USER);
+    this.setPastingVariable(false);
     // range.length contributes to delta.length()
     this.quill.setSelection(
       delta.length() - range.length,
@@ -268,6 +269,8 @@ class Clipboard extends Module<ClipboardOptions> {
     });
     return [elementMatchers, textMatchers];
   }
+
+  setPastingVariable(value: boolean) {}
 }
 Clipboard.DEFAULTS = {
   matchers: [],
@@ -368,7 +371,7 @@ function traverse(
   elementMatchers: Matcher[],
   textMatchers: Matcher[],
   nodeMatches: WeakMap<Node, Matcher[]>,
-  isInsideTable: boolean = false,
+  isInsideTable = false,
 ) {
   // Post-order
   if (node.nodeType === node.TEXT_NODE) {

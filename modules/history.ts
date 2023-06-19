@@ -26,7 +26,10 @@ class History extends Module<HistoryOptions> {
       Quill.events.EDITOR_CHANGE,
       (eventName, delta, oldDelta, source) => {
         if (eventName !== Quill.events.TEXT_CHANGE || this.ignoreChange) return;
-        if (!this.options.userOnly || source === Quill.sources.USER) {
+        if (
+          (!this.options.userOnly && source !== Quill.sources.PAGE_BREAK) ||
+          source === Quill.sources.USER
+        ) {
           this.record(delta, oldDelta);
         } else {
           this.transform(delta);
@@ -61,13 +64,17 @@ class History extends Module<HistoryOptions> {
 
   change(source, dest) {
     if (this.stack[source].length === 0) return;
+    //Para o caso de ter apenas 1 alteração (inserção de conteúdo inicial no documento), não permitir dar Ctrl + Z. Assim, o documento não fica em branco (mantém o estado inicial, de quando foi carregado).
+    if (source === this.stack.undo && this.stack[source].length === 1) return;
     const delta = this.stack[source].pop();
     const base = this.quill.getContents();
     const inverseDelta = delta.invert(base);
     this.stack[dest].push(inverseDelta);
     this.lastRecorded = 0;
     this.ignoreChange = true;
+    this.setIsChangeFromHistory(true);
     this.quill.updateContents(delta, Quill.sources.USER);
+    this.setIsChangeFromHistory(false);
     this.ignoreChange = false;
     const index = getLastChangeIndex(this.quill.scroll, delta);
     this.quill.setSelection(index);
@@ -113,6 +120,11 @@ class History extends Module<HistoryOptions> {
 
   undo() {
     this.change('undo', 'redo');
+  }
+
+  setIsChangeFromHistory(value) {
+    throw new Error('setIsChangeFromHistory must be defined in child class');
+    return Boolean;
   }
 }
 History.DEFAULTS = {

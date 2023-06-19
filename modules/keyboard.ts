@@ -172,6 +172,19 @@ class Keyboard extends Module<KeyboardOptions> {
         this.bindings[evt.which] || [],
       );
       const matches = bindings.filter(binding => Keyboard.match(evt, binding));
+      if (matches.length === 0) {
+        const selection = this.quill.getSelection();
+        if (
+          this.getIsRevisionModeVariable &&
+          selection.length > 0 &&
+          this.isValidKeyCode(evt.which)
+        ) {
+          this.processSubstituteText(evt.key);
+          evt.preventDefault();
+        } else {
+          return;
+        }
+      }
       if (matches.length === 0) return;
       // @ts-expect-error
       const blot = Quill.find(evt.target, true);
@@ -329,6 +342,20 @@ class Keyboard extends Module<KeyboardOptions> {
     this.quill.setSelection(range.index + 1, Quill.sources.SILENT);
     this.quill.focus();
   }
+
+  isValidKeyCode(keyCode: number) {
+    throw new Error('isValidKeyCode must be defined in child class');
+    return Boolean;
+  }
+
+  getIsRevisionModeVariable() {
+    throw new Error('getIsRevisionModeVariable must be defined in child class');
+    return Boolean;
+  }
+
+  processSubstituteText(newText: string) {
+    throw new Error('processSubstituteText must be defined in child class');
+  }
 }
 
 const defaultOptions: KeyboardOptions = {
@@ -387,17 +414,22 @@ const defaultOptions: KeyboardOptions = {
     },
     tab: {
       key: 'Tab',
-      handler(range, context) {
-        if (context.format.table) return true;
-        this.quill.history.cutoff();
-        const delta = new Delta()
-          .retain(range.index)
-          .delete(range.length)
-          .insert('\t');
-        this.quill.updateContents(delta, Quill.sources.USER);
-        this.quill.history.cutoff();
-        this.quill.setSelection(range.index + 1, Quill.sources.SILENT);
-        return false;
+      handler() {
+        //Modificada a rotina original do Quill. Por padrão, quando o usuário pressionar o "Tab", ele viria para essa rotina e não avançaria
+        //para os próximos tratamentos, por conta do "return false". Assim, ao utilizar o "return true", ele passará pela nossa rotina de
+        //tratamento. Mais informações sobre o módulo "keyboard" do Quill: https://quilljs.com/docs/modules/keyboard/
+        return true;
+
+        // if (context.format.table) return true;
+        // this.quill.history.cutoff();
+        // const delta = new Delta()
+        //   .retain(range.index)
+        //   .delete(range.length)
+        //   .insert('\t');
+        // this.quill.updateContents(delta, Quill.sources.USER);
+        // this.quill.history.cutoff();
+        // this.quill.setSelection(range.index + 1, Quill.sources.SILENT);
+        // return false;
       },
     },
     'blockquote empty enter': {

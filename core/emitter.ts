@@ -33,6 +33,7 @@ class Emitter extends EventEmitter<string> {
     API: 'api',
     SILENT: 'silent',
     USER: 'user',
+    PAGE_BREAK: 'page-break',
   } as const;
 
   // @ts-expect-error listeners is declared in EventEmitter as a function
