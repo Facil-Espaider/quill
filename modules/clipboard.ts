@@ -22,6 +22,7 @@ import { DirectionAttribute, DirectionStyle } from '../formats/direction';
 import { FontStyle } from '../formats/font';
 import { SizeStyle } from '../formats/size';
 import { deleteRange } from './keyboard';
+import { extend } from 'lodash';
 
 const debug = logger('quill:clipboard');
 
@@ -224,8 +225,42 @@ class Clipboard extends Module<ClipboardOptions> {
 
   onPaste(range: Range, { text, html }: { text: string; html: string }) {
     const formats = this.quill.getFormat(range.index);
-    const isInsideTable = formats['table_cell_line'];
-    const pastedDelta = this.convert({ text, html }, formats, isInsideTable);
+    const isInsideTable = 'table-cell-line' in formats;
+    let pastedDelta = this.convert({ text, html }, formats, isInsideTable);
+    if (isInsideTable) {
+      const [line] = this.quill.getLine(range.index);
+      const lineFormats = line.formats();
+      pastedDelta = pastedDelta.reduce((newDelta, op) => {
+        if (op.insert && typeof op.insert === 'string') {
+          const lines = [];
+          const insertStr = op.insert;
+          let start = 0;
+          for (let i = 0; i < op.insert.length; i++) {
+            if (insertStr.charAt(i) === '\n') {
+              if (i === 0) {
+                lines.push('\n');
+              } else {
+                lines.push(insertStr.substring(start, i));
+                lines.push('\n');
+              }
+              start = i + 1;
+            }
+          }
+          const tailStr = insertStr.substring(start);
+          if (tailStr) lines.push(tailStr);
+
+          lines.forEach(text => {
+            text === '\n'
+              ? newDelta.insert('\n', extend({}, op.attributes, lineFormats))
+              : newDelta.insert(text, op.attributes);
+          });
+        } else {
+          newDelta.insert(op.insert, op.attributes);
+        }
+
+        return newDelta;
+      }, new Delta());
+    }
     debug.log('onPaste', pastedDelta, { text, html });
     const delta = new Delta()
       .retain(range.index)
@@ -270,6 +305,7 @@ class Clipboard extends Module<ClipboardOptions> {
     return [elementMatchers, textMatchers];
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setPastingVariable(value: boolean) {}
 }
 Clipboard.DEFAULTS = {

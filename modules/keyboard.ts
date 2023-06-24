@@ -343,6 +343,7 @@ class Keyboard extends Module<KeyboardOptions> {
     this.quill.focus();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isValidKeyCode(keyCode: number) {
     throw new Error('isValidKeyCode must be defined in child class');
     return Boolean;
@@ -353,6 +354,7 @@ class Keyboard extends Module<KeyboardOptions> {
     return Boolean;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   processSubstituteText(newText: string) {
     throw new Error('processSubstituteText must be defined in child class');
   }

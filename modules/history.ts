@@ -122,6 +122,7 @@ class History extends Module<HistoryOptions> {
     this.change('undo', 'redo');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setIsChangeFromHistory(value) {
     throw new Error('setIsChangeFromHistory must be defined in child class');
     return Boolean;
