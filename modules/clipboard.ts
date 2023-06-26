@@ -238,10 +238,10 @@ class Clipboard extends Module<ClipboardOptions> {
     let pastedDelta = this.convert({ text, html }, formats, isInsideTable);
     if (isInsideTable) {
       const [line] = this.quill.getLine(range.index);
-      const lineFormats = line.formats();
+      const lineFormats = line ? line.formats() : {};
       pastedDelta = pastedDelta.reduce((newDelta, op) => {
         if (op.insert && typeof op.insert === 'string') {
-          const lines = [];
+          const lines: string[] = [];
           const insertStr = op.insert;
           let start = 0;
           for (let i = 0; i < op.insert.length; i++) {

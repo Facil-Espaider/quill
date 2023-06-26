@@ -571,31 +571,26 @@ class Quill {
     return this.scroll.isEnabled();
   }
 
-  off(...args: Parameters<(typeof Emitter)['prototype']['off']>) {
+  off(...args: Parameters<typeof Emitter['prototype']['off']>) {
     return this.emitter.off(...args);
   }
 
   on(
-    event: (typeof Emitter)['events']['TEXT_CHANGE'],
+    event: typeof Emitter['events']['TEXT_CHANGE'],
     handler: (delta: Delta, oldContent: Delta, source: EmitterSource) => void,
   ): Emitter;
   on(
-    event: (typeof Emitter)['events']['SELECTION_CHANGE'],
+    event: typeof Emitter['events']['SELECTION_CHANGE'],
     handler: (range: Range, oldRange: Range, source: EmitterSource) => void,
   ): Emitter;
   // @ts-expect-error
   on(
-    event: (typeof Emitter)['events']['EDITOR_CHANGE'],
+    event: typeof Emitter['events']['EDITOR_CHANGE'],
     handler: (
       ...args:
+        | [typeof Emitter['events']['TEXT_CHANGE'], Delta, Delta, EmitterSource]
         | [
-            (typeof Emitter)['events']['TEXT_CHANGE'],
-            Delta,
-            Delta,
-            EmitterSource,
-          ]
-        | [
-            (typeof Emitter)['events']['SELECTION_CHANGE'],
+            typeof Emitter['events']['SELECTION_CHANGE'],
             Range,
             Range,
             EmitterSource,
@@ -603,11 +598,11 @@ class Quill {
     ) => void,
   ): Emitter;
   on(event: string, ...args: unknown[]): Emitter;
-  on(...args: Parameters<(typeof Emitter)['prototype']['on']>): Emitter {
+  on(...args: Parameters<typeof Emitter['prototype']['on']>): Emitter {
     return this.emitter.on(...args);
   }
 
-  once(...args: Parameters<(typeof Emitter)['prototype']['once']>) {
+  once(...args: Parameters<typeof Emitter['prototype']['once']>) {
     return this.emitter.once(...args);
   }
 

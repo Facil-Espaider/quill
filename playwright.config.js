@@ -16,9 +16,9 @@ const config = {
         trace: 'on-first-retry',
     },
     projects: [
-        { name: 'Chrome', use: Object.assign({}, devices['Desktop Chrome']) },
-        { name: 'Firefox', use: Object.assign({}, devices['Desktop Firefox']) },
-        { name: 'Safari', use: Object.assign({}, devices['Desktop Safari']) },
+        { name: 'Chrome', use: { ...devices['Desktop Chrome'] } },
+        { name: 'Firefox', use: { ...devices['Desktop Firefox'] } },
+        { name: 'Safari', use: { ...devices['Desktop Safari'] } },
         { name: 'Edge', use: { channel: 'msedge' } },
     ],
 };

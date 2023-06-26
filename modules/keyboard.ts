@@ -180,9 +180,11 @@ class Keyboard extends Module<KeyboardOptions> {
       if (matches.length === 0) {
         const selection = this.quill.getSelection();
         if (
+          // @ts-ignore
           this.getIsRevisionModeVariable &&
+          selection &&
           selection.length > 0 &&
-          this.isValidKeyCode(evt.which)
+          isValidKeyCode(evt.which)
         ) {
           this.processSubstituteText(evt.key);
           evt.preventDefault();
@@ -357,20 +359,14 @@ class Keyboard extends Module<KeyboardOptions> {
     this.quill.focus();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  isValidKeyCode(keyCode: number) {
-    throw new Error('isValidKeyCode must be defined in child class');
-    return Boolean;
-  }
-
-  getIsRevisionModeVariable() {
-    throw new Error('getIsRevisionModeVariable must be defined in child class');
-    return Boolean;
+  getIsRevisionModeVariable(): boolean {
+    return false;
+    //throw new Error('getIsRevisionModeVariable must be defined in child class');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   processSubstituteText(newText: string) {
-    throw new Error('processSubstituteText must be defined in child class');
+    //throw new Error('processSubstituteText must be defined in child class');
   }
 }
 
@@ -853,6 +849,38 @@ function tableSide(table, row, cell, offset) {
     return 1;
   }
   return null;
+}
+
+function isValidKeyCode(keyCode: number): boolean {
+  const isAltKey = keyCode === 18;
+  const isArrowKey = keyCode >= 37 && keyCode <= 40;
+  const isCapsLockKey = keyCode === 20;
+  const isCtrlKey = keyCode === 17;
+  const isEndKey = keyCode === 35;
+  const isEscapeKey = keyCode === 27;
+  const isFunctionKey = keyCode >= 112 && keyCode <= 123;
+  const isHomeKey = keyCode === 36;
+  const isInsertKey = keyCode === 45;
+  const isNumLockKey = keyCode === 144;
+  const isPageUpDownKey = keyCode === 33 || keyCode === 34;
+  const isShiftKey = keyCode === 16;
+  const isWindowsKey = keyCode === 91;
+
+  return (
+    !isAltKey &&
+    !isArrowKey &&
+    !isCapsLockKey &&
+    !isCtrlKey &&
+    !isEndKey &&
+    !isEscapeKey &&
+    !isFunctionKey &&
+    !isHomeKey &&
+    !isInsertKey &&
+    !isNumLockKey &&
+    !isPageUpDownKey &&
+    !isShiftKey &&
+    !isWindowsKey
+  );
 }
 
 export { Keyboard as default, SHORTKEY, normalize, deleteRange };

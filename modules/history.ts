@@ -68,7 +68,8 @@ class History extends Module<HistoryOptions> {
   change(source: 'undo' | 'redo', dest: 'redo' | 'undo') {
     if (this.stack[source].length === 0) return;
     //Para o caso de ter apenas 1 alteração (inserção de conteúdo inicial no documento), não permitir dar Ctrl + Z. Assim, o documento não fica em branco (mantém o estado inicial, de quando foi carregado).
-    if (source === this.stack.undo && this.stack[source].length === 1) return;
+    //if (Array.isArray(this.stack[source]) && this.stack[source].length === 1)
+    //  return;
     const delta = this.stack[source].pop();
     if (!delta) return;
     const base = this.quill.getContents();
@@ -132,8 +133,7 @@ class History extends Module<HistoryOptions> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   setIsChangeFromHistory(value) {
-    throw new Error('setIsChangeFromHistory must be defined in child class');
-    return Boolean;
+    //throw new Error('setIsChangeFromHistory must be defined in child class');
   }
 }
 History.DEFAULTS = {

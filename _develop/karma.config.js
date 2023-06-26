@@ -61,6 +61,6 @@ module.exports = config => {
     config.browserDisconnectTolerance = 3;
     config.browserNoActivityTimeout = 60000;
     config.browserSocketTimeout = 40000;
-    config.captureTimeout = 120000;
+    config.captureTimeout = 120000;    
   }
 };

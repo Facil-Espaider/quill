@@ -1,6 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+
 const pkg = require('../package.json');
 
 const bannerPack = new webpack.BannerPlugin({
@@ -68,9 +70,11 @@ const baseConfig = {
   },
   output: {
     filename: '[name]',
-    library: 'Quill',
-    libraryExport: 'default',
-    libraryTarget: 'umd',
+    library: {
+      name: 'Quill',
+      type: 'umd',
+      export: 'default',
+    },    
     path: path.resolve(__dirname, '../dist/'),
     clean: true,
   },
@@ -111,8 +115,16 @@ module.exports = env => {
     return {
       ...prodConfig,
       mode: 'production',
-      entry: { 'quill.min.js': './quill.ts' },
+      entry: {
+      'quill.min.js': './quill.ts',      
+      'quill.snow': './assets/snow.styl',
+    },
       devtool: 'source-map',
+      optimization: {
+        minimizer: [
+          new CssMinimizerPlugin(),
+        ],
+      },
     };
   }
   if (env?.coverage) {
