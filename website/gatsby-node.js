@@ -17,8 +17,7 @@ exports.onCreateBabelConfig = ({ actions }) => {
 exports.onCreateNode = async ({ node, actions, getNode, reporter, cache }) => {
   const { createNodeField } = actions;
   if (node.internal.type !== `Mdx`) return;
-
-  const filePath = node.internal.contentFilePath;
+  const filePath = node.internal.contentFilePath.replace(/\//g, '\\');
   let pageType = 'unknown';
   if (filePath.startsWith(path.resolve('content/guides'))) {
     pageType = 'guide';
@@ -54,7 +53,7 @@ exports.onCreateNode = async ({ node, actions, getNode, reporter, cache }) => {
     const result = await compileMDX(
       {
         source: node.body.split('{/* more */}')[0],
-        path: node.internal.contentFilePath,
+        path: node.internal.contentFilePath.replace(/\//g, '\\'),
       },
       {
         // These options are requried to allow rendering to string
@@ -121,13 +120,13 @@ exports.createPages = ({ graphql, actions }) => {
     }
 
     result.data.allMdx.edges.forEach(({ node }) => {
-      const filePath = node.internal.contentFilePath;
+      const filePath = node.internal.contentFilePath.replace(/\//g, '\\');
       const { pageType, slug } = node.fields;
 
       const template = templates[pageType];
       if (template && !node.frontmatter.external) {
         createPage({
-          path: `${slug}`,
+          path: `${slug.replace(/\\/g, '/')}`,
           component: `${template}?__contentFilePath=${filePath}`,
           context: { id: node.id },
         });
