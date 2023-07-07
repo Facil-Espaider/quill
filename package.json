@@ -84,12 +84,12 @@
     "defaults"
   ],
   "scripts": {    
-    "build": "npm run lint && npm run build:typescript",
+    "build": "npm run lint:eslint && npm run build:typescript",
     "build:release": "npm run build && npm run build:webpack:release",
     "build:develop": "npm run build && npm run build:webpack",
     "build:webpack": "webpack --config _develop/webpack.config.js",
     "build:webpack:release": "webpack --config _develop/webpack.config.js --env minimize",
-    "build:typescript": "tsc",
+    "build:typescript": "tsc -p tsconfig.npm.json",
     "develop": "npm run start",
     "lint": "npm run lint:eslint && npm run lint:tsc",
     "lint:eslint": "eslint .",
