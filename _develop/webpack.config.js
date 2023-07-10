@@ -61,7 +61,7 @@ const baseConfig = {
   mode: 'development',
   context: path.resolve(__dirname, '..'),
   entry: {
-    'quill.js': ['./quill.ts'],
+    'quill.js': ['./quill.ts'], 
     'quill.core.js': ['./core.ts'],
     'quill.core': './assets/core.styl',
     'quill.bubble': './assets/bubble.styl',
@@ -71,6 +71,7 @@ const baseConfig = {
   },
   output: {
     filename: '[name]',
+    sourceMapFilename: "[name].map",
     library: {
       name: 'Quill',
       type: 'umd',
@@ -80,8 +81,9 @@ const baseConfig = {
     clean: true,
   },
   resolve: {
-    extensions: ['.js', '.styl', '.ts'],
+    extensions: ['.js', '.styl', '.ts', '.map'],
   },
+  devtool: 'eval-cheap-source-map',
   module: {
     rules: [jsRules, stylRules, svgRules],
     noParse: [
@@ -120,7 +122,7 @@ module.exports = env => {
       'quill.min.js': './quill.ts',      
       'quill.snow': './assets/snow.styl',
     },
-      devtool: 'source-map',
+      devtool: false,
       optimization: {
         minimizer: [
           new CssMinimizerPlugin(),
