@@ -55,12 +55,13 @@ module.exports = config => {
 
   /* eslint-disable no-param-reassign */
   if (process.env.GITHUB_ACTION) {
+    config.reporters = ['dots', 'saucelabs'];
     config.transports = ['polling'];
     config.browsers = [process.env.BROWSER];
     config.browserDisconnectTimeout = 10000;
     config.browserDisconnectTolerance = 3;
     config.browserNoActivityTimeout = 60000;
     config.browserSocketTimeout = 40000;
-    config.captureTimeout = 120000;
+    config.captureTimeout = 120000;    
   }
 };

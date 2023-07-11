@@ -123,12 +123,12 @@ resets(arr)
           counter-reset: resets((num+1)..MAX_INDENT)
 
   for num in (1..MAX_INDENT)
-    .ql-indent-{num}:not(.ql-direction-rtl)
-      padding-left: (3*num)em
-    li.ql-indent-{num}:not(.ql-direction-rtl)
+    .ql-indent-{num}:not(.ql-direction-rtl):not(.ql-custom_list)
+      padding-left: (3*num)em !important
+    li.ql-indent-{num}:not(.ql-direction-rtl):not(.ql-custom_list)
       padding-left: (3*num + LIST_STYLE_OUTER_WIDTH)em
     .ql-indent-{num}.ql-direction-rtl.ql-align-right
-      padding-right: (3*num)em
+      padding-right: (3*num)em !important
     li.ql-indent-{num}.ql-direction-rtl.ql-align-right
       padding-right: (3*num + LIST_STYLE_OUTER_WIDTH)em
 
@@ -141,7 +141,7 @@ resets(arr)
 
   table
     table-layout: fixed
-    width: 100%
+    
     td
       outline: none
 

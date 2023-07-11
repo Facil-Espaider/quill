@@ -1,6 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+
 const pkg = require('../package.json');
 
 const bannerPack = new webpack.BannerPlugin({
@@ -31,32 +33,9 @@ const source = [
 });
 
 const jsRules = {
-  test: /\.js$/,
+  test: /\.(j|t)s$/,
   include: source,
-  use: [
-    {
-      loader: 'babel-loader',
-      options: {
-        presets: [
-          [
-            '@babel/env',
-            {
-              targets: {
-                browsers: [
-                  'last 2 Chrome major versions',
-                  'last 2 Firefox major versions',
-                  'last 2 Safari major versions',
-                  'last 2 Edge major versions',
-                  'last 2 iOS major versions',
-                  'last 2 ChromeAndroid major versions',
-                ],
-              },
-            },
-          ],
-        ],
-      },
-    },
-  ],
+  use: ['babel-loader'],
 };
 
 const svgRules = {
@@ -78,34 +57,35 @@ const stylRules = {
   use: [MiniCssExtractPlugin.loader, 'css-loader', 'stylus-loader'],
 };
 
-const tsRules = {
-  test: /\.ts$/,
-  use: [{ loader: 'ts-loader' }],
-};
-
 const baseConfig = {
   mode: 'development',
   context: path.resolve(__dirname, '..'),
   entry: {
-    'quill.js': ['./quill.ts'],
+    'quill.js': ['./quill.ts'], 
     'quill.core.js': ['./core.ts'],
     'quill.core': './assets/core.styl',
     'quill.bubble': './assets/bubble.styl',
     'quill.snow': './assets/snow.styl',
     'unit.js': './test/unit.js',
+    'fuzz.js': './test/fuzz.ts',
   },
   output: {
     filename: '[name]',
-    library: 'Quill',
-    libraryExport: 'default',
-    libraryTarget: 'umd',
+    sourceMapFilename: "[name].map",
+    library: {
+      name: 'Quill',
+      type: 'umd',
+      export: 'default',
+    },    
     path: path.resolve(__dirname, '../dist/'),
+    clean: true,
   },
   resolve: {
-    extensions: ['.js', '.styl', '.ts'],
+    extensions: ['.js', '.styl', '.ts', '.map'],
   },
+  devtool: 'eval-cheap-source-map',
   module: {
-    rules: [jsRules, stylRules, svgRules, tsRules],
+    rules: [jsRules, stylRules, svgRules],
     noParse: [
       /\/node_modules\/clone\/clone\.js$/,
       /\/node_modules\/eventemitter3\/index\.js$/,
@@ -133,16 +113,24 @@ const baseConfig = {
 };
 
 module.exports = env => {
-  if (env && env.minimize) {
+  if (env?.minimize) {
     const { devServer, ...prodConfig } = baseConfig;
     return {
       ...prodConfig,
       mode: 'production',
-      entry: { 'quill.min.js': './quill.ts' },
-      devtool: 'source-map',
+      entry: {
+      'quill.min.js': './quill.ts',      
+      'quill.snow': './assets/snow.styl',
+    },
+      devtool: false,
+      optimization: {
+        minimizer: [
+          new CssMinimizerPlugin(),
+        ],
+      },
     };
   }
-  if (env && env.coverage) {
+  if (env?.coverage) {
     baseConfig.module.rules[0].use[0].options.plugins = ['istanbul'];
     return baseConfig;
   }
