@@ -81,7 +81,7 @@ const baseConfig = {
     clean: true,
   },
   resolve: {
-    extensions: ['.js', '.styl', '.ts', '.map'],
+    extensions: ['.js', '.styl', '.ts'],
   },
   devtool: 'eval-cheap-source-map',
   module: {
@@ -119,7 +119,7 @@ module.exports = env => {
       ...prodConfig,
       mode: 'production',
       entry: {
-      'quill.min.js': './quill.ts',      
+      'quill.js': './quill.ts',      
       'quill.snow': './assets/snow.styl',
     },
       devtool: false,
