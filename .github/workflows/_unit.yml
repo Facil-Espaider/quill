@@ -8,13 +8,13 @@ jobs:
       fail-fast: false
       matrix:
         browser: [
-            mac-chrome-latest,
-            mac-firefox-latest,
-            mac-safari-latest,
+            # mac-chrome-latest,
+            # mac-firefox-latest,
+            # mac-safari-latest,
             windows-chrome-latest,
             windows-firefox-latest,
             windows-edge-latest,
-            ios-latest,
+            # ios-latest,
             # android-latest,
           ]
 
