@@ -113,7 +113,7 @@ const baseConfig = {
 };
 
 module.exports = env => {
-  if (env?.minimize) {
+  if (env?.minimize) {    
     const { devServer, ...prodConfig } = baseConfig;
     return {
       ...prodConfig,
@@ -122,11 +122,9 @@ module.exports = env => {
       'quill.js': './quill.ts',      
       'quill.snow': './assets/snow.styl',
     },
-      devtool: false,
+      devtool: false,      
       optimization: {
-        minimizer: [
-          new CssMinimizerPlugin(),
-        ],
+        minimize: true
       },
     };
   }
