@@ -24,7 +24,7 @@
     "no-use-before-define": ["error", { "functions": false, "classes": false }],
     "prettier/prettier": [
       "error",
-      { "endOfLine": "lf" }
+      { "endOfLine": "auto" }
     ]
   },
   "overrides": [
