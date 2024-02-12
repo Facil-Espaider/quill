@@ -110,6 +110,20 @@ class Clipboard extends Module<ClipboardOptions> {
       });
     }
     if (!html) {
+      if (text) {
+        const deltaSplit = new Delta();
+        for (const textPart of text.split('\n')) {
+          deltaSplit.insert(textPart).insert('\n', {
+            spacing_before: '0px',
+            spacing_after: '0px',
+            indent_right: '0px',
+            indent_left: '0px',
+            text_indent: '0px',
+            line_spacing: '16px',
+          });
+        }
+        return deltaSplit;
+      }
       return new Delta().insert(text || '');
     }
     const delta = this.convertHTML(html, isInsideTable);
@@ -125,7 +139,7 @@ class Clipboard extends Module<ClipboardOptions> {
           op.attributes &&
           Object.prototype.hasOwnProperty.call(
             op.attributes,
-            'table_cell_line',
+            'table-cell-line',
           ),
       ) &&
       isInsideTable
@@ -134,9 +148,9 @@ class Clipboard extends Module<ClipboardOptions> {
         const op = delta.ops[i];
         if (
           op.attributes &&
-          Object.prototype.hasOwnProperty.call(op.attributes, 'table_cell_line')
+          Object.prototype.hasOwnProperty.call(op.attributes, 'table-cell-line')
         ) {
-          op.attributes['table_cell_line'] = formats['table_cell_line'];
+          op.attributes['table-cell-line'] = formats['table-cell-line'];
         }
       }
     }
@@ -574,19 +588,40 @@ function matchNewline(node: Node, delta: Delta, scroll: ScrollBlot) {
   if (!deltaEndsWith(delta, '\n')) {
     // @ts-expect-error
     if (isLine(node)) {
-      return delta.insert('\n');
+      return delta.insert('\n', {
+        spacing_before: '0px',
+        spacing_after: '0px',
+        indent_right: '0px',
+        indent_left: '0px',
+        text_indent: '0px',
+        line_spacing: '16px',
+      });
     }
     if (delta.length() > 0 && node.nextSibling) {
       let nextSibling: Node | null = node.nextSibling;
       while (nextSibling != null) {
         // @ts-expect-error
         if (isLine(nextSibling)) {
-          return delta.insert('\n');
+          return delta.insert('\n', {
+            spacing_before: '0px',
+            spacing_after: '0px',
+            indent_right: '0px',
+            indent_left: '0px',
+            text_indent: '0px',
+            line_spacing: '16px',
+          });
         }
         const match = scroll.query(nextSibling);
         // @ts-expect-error
         if (match && match.prototype instanceof BlockEmbed) {
-          return delta.insert('\n');
+          return delta.insert('\n', {
+            spacing_before: '0px',
+            spacing_after: '0px',
+            indent_right: '0px',
+            indent_left: '0px',
+            text_indent: '0px',
+            line_spacing: '16px',
+          });
         }
         nextSibling = nextSibling.firstChild;
       }
