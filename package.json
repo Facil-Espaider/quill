@@ -108,7 +108,7 @@
     "test:unit": "npm run build:webpack && karma start _develop/karma.unit.config.js",    
     "test:fuzz": "npm run build:webpack && karma start _develop/karma.fuzz.config.js",
     "test:e2e": "npx playwright test",
-    "test:coverage": "webpack --env.coverage --config _develop/webpack.config.js && karma start _develop/karma.unit.config.js --reporters coverage"
+    "test:coverage": "webpack --env coverage --config _develop/webpack.config.js && karma start _develop/karma.unit.config.js --reporters coverage"
   },
   "overrides": {
     "saucelabs": "^7.2.2",
