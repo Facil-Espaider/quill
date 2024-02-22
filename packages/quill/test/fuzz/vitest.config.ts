@@ -7,5 +7,6 @@ export default defineConfig({
   test: {
     include: ['test/fuzz/**/*.spec.ts'],
     environment: 'jsdom',
+    reporters: ['default', 'html']
   },
 });
