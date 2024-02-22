@@ -2,14 +2,12 @@ name: Main
 
 on:
   push:
-    branches: [develop]
+    branches: [main]
 
 concurrency:
   group: main-build
   cancel-in-progress: true
 
 jobs:
-  unit:
-    uses: ./.github/workflows/_unit.yml
-  fuzz:
-    uses: ./.github/workflows/_fuzz.yml
+  test:
+    uses: ./.github/workflows/_test.yml

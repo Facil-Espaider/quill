@@ -2,10 +2,8 @@ name: Pull Requests
 
 on:
   pull_request:
-    branches: [develop, doc7]
+    branches: [develop]
 
 jobs:
-  unit:
-    uses: ./.github/workflows/_unit.yml
-  fuzz:
-    uses: ./.github/workflows/_fuzz.yml
+  test:
+    uses: ./.github/workflows/_test.yml
