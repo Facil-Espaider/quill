@@ -101,10 +101,68 @@ class Clipboard extends Module<ClipboardOptions> {
     this.matchers.push([selector, matcher]);
   }
 
+  // convert(
+  //   { html, text }: { html?: string; text?: string },
+  //   formats: Record<string, unknown> = {},
+  //   isInsideTable = false,
+  // ) {
+  //   if (formats[CodeBlock.blotName]) {
+  //     return new Delta().insert(text || '', {
+  //       [CodeBlock.blotName]: formats[CodeBlock.blotName],
+  //     });
+  //   }
+  //   if (!html) {
+  //     return new Delta().insert(text || '', formats);
+  //     if (text) {
+  //       const deltaSplit = new Delta();
+  //       for (const textPart of text.split('\n')) {
+  //         deltaSplit.insert(textPart).insert('\n', {
+  //           spacing_before: '0px',
+  //           spacing_after: '0px',
+  //           indent_right: '0px',
+  //           indent_left: '0px',
+  //           text_indent: '0px',
+  //           line_spacing: '16px',
+  //         });
+  //       }
+  //       return deltaSplit;
+  //     }
+  //     return new Delta().insert(text || '');
+  //   }
+  //   const delta = this.convertHTML(html, isInsideTable);
+  //   // Remove trailing newline
+  //   if (
+  //     deltaEndsWith(delta, '\n') &&
+  //     (delta.ops[delta.ops.length - 1].attributes == null || formats.table)
+  //   ) {
+  //     return delta.compose(new Delta().retain(delta.length() - 1).delete(1));
+  //   } else if (
+  //     delta.ops.find(
+  //       op =>
+  //         op.attributes &&
+  //         Object.prototype.hasOwnProperty.call(
+  //           op.attributes,
+  //           'table-cell-line',
+  //         ),
+  //     ) &&
+  //     isInsideTable
+  //   ) {
+  //     for (let i = 0; i < delta.ops.length; i++) {
+  //       const op = delta.ops[i];
+  //       if (
+  //         op.attributes &&
+  //         Object.prototype.hasOwnProperty.call(op.attributes, 'table-cell-line')
+  //       ) {
+  //         op.attributes['table-cell-line'] = formats['table-cell-line'];
+  //       }
+  //     }
+  //   }
+  //   return delta;
+  // }
+
   convert(
     { html, text }: { html?: string; text?: string },
     formats: Record<string, unknown> = {},
-    isInsideTable = false,
   ) {
     if (formats[CodeBlock.blotName]) {
       return new Delta().insert(text || '', {
@@ -113,59 +171,23 @@ class Clipboard extends Module<ClipboardOptions> {
     }
     if (!html) {
       return new Delta().insert(text || '', formats);
-      if (text) {
-        const deltaSplit = new Delta();
-        for (const textPart of text.split('\n')) {
-          deltaSplit.insert(textPart).insert('\n', {
-            spacing_before: '0px',
-            spacing_after: '0px',
-            indent_right: '0px',
-            indent_left: '0px',
-            text_indent: '0px',
-            line_spacing: '16px',
-          });
-        }
-        return deltaSplit;
-      }
-      return new Delta().insert(text || '');
     }
-    const delta = this.convertHTML(html, isInsideTable);
+    const delta = this.convertHTML(html);
     // Remove trailing newline
     if (
       deltaEndsWith(delta, '\n') &&
       (delta.ops[delta.ops.length - 1].attributes == null || formats.table)
     ) {
       return delta.compose(new Delta().retain(delta.length() - 1).delete(1));
-    } else if (
-      delta.ops.find(
-        op =>
-          op.attributes &&
-          Object.prototype.hasOwnProperty.call(
-            op.attributes,
-            'table-cell-line',
-          ),
-      ) &&
-      isInsideTable
-    ) {
-      for (let i = 0; i < delta.ops.length; i++) {
-        const op = delta.ops[i];
-        if (
-          op.attributes &&
-          Object.prototype.hasOwnProperty.call(op.attributes, 'table-cell-line')
-        ) {
-          op.attributes['table-cell-line'] = formats['table-cell-line'];
-        }
-      }
     }
     return delta;
   }
 
-  convertHTML(html: string) {
   protected normalizeHTML(doc: Document) {
     normalizeExternalHTML(doc);
   }
 
-  protected convertHTML(html: string, , isInsideTable = false) {
+  protected convertHTML(html: string, isInsideTable: boolean = false) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     this.normalizeHTML(doc);
     const container = doc.body;
@@ -255,52 +277,69 @@ class Clipboard extends Module<ClipboardOptions> {
     return { html, text };
   }
 
+  // onPaste(range: Range, { text, html }: { text?: string; html?: string }) {
+  //   const formats = this.quill.getFormat(range.index);
+  //   const isInsideTable = 'table-cell-line' in formats;
+  //   let pastedDelta = this.convert({ text, html }, formats, isInsideTable);
+  //   if (isInsideTable) {
+  //     const [line] = this.quill.getLine(range.index);
+  //     const lineFormats = line ? line.formats() : {};
+  //     pastedDelta = pastedDelta.reduce((newDelta, op) => {
+  //       if (op.insert && typeof op.insert === 'string') {
+  //         const lines: string[] = [];
+  //         const insertStr = op.insert;
+  //         let start = 0;
+  //         for (let i = 0; i < op.insert.length; i++) {
+  //           if (insertStr.charAt(i) === '\n') {
+  //             if (i === 0) {
+  //               lines.push('\n');
+  //             } else {
+  //               lines.push(insertStr.substring(start, i));
+  //               lines.push('\n');
+  //             }
+  //             start = i + 1;
+  //           }
+  //         }
+  //         const tailStr = insertStr.substring(start);
+  //         if (tailStr) lines.push(tailStr);
+
+  //         lines.forEach(text => {
+  //           text === '\n'
+  //             ? newDelta.insert('\n', extend({}, op.attributes, lineFormats))
+  //             : newDelta.insert(text, op.attributes);
+  //         });
+  //       } else {
+  //         newDelta.insert(op.insert, op.attributes);
+  //       }
+
+  //       return newDelta;
+  //     }, new Delta());
+  //   }
+  //   debug.log('onPaste', pastedDelta, { text, html });
+  //   const delta = new Delta()
+  //     .retain(range.index)
+  //     .delete(range.length)
+  //     .concat(pastedDelta);
+  //   this.setPastingVariable(true);
+  //   this.quill.updateContents(delta, Quill.sources.USER);
+  //   this.setPastingVariable(false);
+  //   // range.length contributes to delta.length()
+  //   this.quill.setSelection(
+  //     delta.length() - range.length,
+  //     Quill.sources.SILENT,
+  //   );
+  //   this.quill.scrollSelectionIntoView();
+  // }
+
   onPaste(range: Range, { text, html }: { text?: string; html?: string }) {
     const formats = this.quill.getFormat(range.index);
-    const isInsideTable = 'table-cell-line' in formats;
-    let pastedDelta = this.convert({ text, html }, formats, isInsideTable);
-    if (isInsideTable) {
-      const [line] = this.quill.getLine(range.index);
-      const lineFormats = line ? line.formats() : {};
-      pastedDelta = pastedDelta.reduce((newDelta, op) => {
-        if (op.insert && typeof op.insert === 'string') {
-          const lines: string[] = [];
-          const insertStr = op.insert;
-          let start = 0;
-          for (let i = 0; i < op.insert.length; i++) {
-            if (insertStr.charAt(i) === '\n') {
-              if (i === 0) {
-                lines.push('\n');
-              } else {
-                lines.push(insertStr.substring(start, i));
-                lines.push('\n');
-              }
-              start = i + 1;
-            }
-          }
-          const tailStr = insertStr.substring(start);
-          if (tailStr) lines.push(tailStr);
-
-          lines.forEach(text => {
-            text === '\n'
-              ? newDelta.insert('\n', extend({}, op.attributes, lineFormats))
-              : newDelta.insert(text, op.attributes);
-          });
-        } else {
-          newDelta.insert(op.insert, op.attributes);
-        }
-
-        return newDelta;
-      }, new Delta());
-    }
+    const pastedDelta = this.convert({ text, html }, formats);
     debug.log('onPaste', pastedDelta, { text, html });
     const delta = new Delta()
       .retain(range.index)
       .delete(range.length)
       .concat(pastedDelta);
-    this.setPastingVariable(true);
     this.quill.updateContents(delta, Quill.sources.USER);
-    this.setPastingVariable(false);
     // range.length contributes to delta.length()
     this.quill.setSelection(
       delta.length() - range.length,

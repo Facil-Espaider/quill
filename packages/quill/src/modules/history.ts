@@ -91,7 +91,7 @@ class History extends Module<HistoryOptions> {
     this.lastRecorded = 0;
     this.ignoreChange = true;
     this.setIsChangeFromHistory(true);
-    this.quill.updateContents(delta, Quill.sources.USER);
+    this.quill.updateContents(item.delta, Quill.sources.USER);
     this.setIsChangeFromHistory(false);
     this.ignoreChange = false;
 
@@ -147,7 +147,7 @@ class History extends Module<HistoryOptions> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setIsChangeFromHistory(value) {
+  setIsChangeFromHistory(value : boolean) {
     //throw new Error('setIsChangeFromHistory must be defined in child class');
   }
 
