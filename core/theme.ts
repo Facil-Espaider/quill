@@ -19,10 +19,7 @@ class Theme {
 
   modules: Record<string, unknown> = {};
 
-  constructor(
-    protected quill: Quill,
-    protected options: ThemeOptions,
-  ) {}
+  constructor(protected quill: Quill, protected options: ThemeOptions) {}
 
   init() {
     Object.keys(this.options.modules).forEach(name => {

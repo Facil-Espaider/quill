@@ -20,10 +20,7 @@ interface NormalizedRange {
 }
 
 class Range {
-  constructor(
-    public index: number,
-    public length = 0,
-  ) {}
+  constructor(public index: number, public length = 0) {}
 }
 
 class Selection {
