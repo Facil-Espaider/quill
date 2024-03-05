@@ -5,7 +5,10 @@ import Emitter from './emitter';
 class Composition {
   isComposing = false;
 
-  constructor(private scroll: Scroll, private emitter: Emitter) {
+  constructor(
+    private scroll: Scroll,
+    private emitter: Emitter,
+  ) {
     this.setupListeners();
   }
 

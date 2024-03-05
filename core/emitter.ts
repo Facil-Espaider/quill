@@ -72,6 +72,6 @@ class Emitter extends EventEmitter<string> {
 }
 
 export type EmitterSource =
-  typeof Emitter.sources[keyof typeof Emitter.sources];
+  (typeof Emitter.sources)[keyof typeof Emitter.sources];
 
 export default Emitter;
