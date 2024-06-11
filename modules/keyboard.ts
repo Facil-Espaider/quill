@@ -181,7 +181,7 @@ class Keyboard extends Module<KeyboardOptions> {
         const selection = this.quill.getSelection();
         if (
           // @ts-ignore
-          this.getIsRevisionModeVariable &&
+          this.getIsRevisionModeVariable() &&
           selection &&
           selection.length > 0 &&
           isValidKeyCode(evt.which)
