@@ -386,22 +386,33 @@ function convertHTML(blot, index, length, isRoot = false) {
 }
 
 function combineFormats(formats, combined) {
-  return Object.keys(combined).reduce((merged, name) => {
-    if (formats[name] == null) return merged;
+  const merged = {};
+
+  Object.keys(combined).forEach(name => {
     if (combined[name] === formats[name]) {
       merged[name] = combined[name];
     } else if (Array.isArray(combined[name])) {
-      if (combined[name].indexOf(formats[name]) < 0) {
+      if (!combined[name].includes(formats[name])) {
         merged[name] = combined[name].concat([formats[name]]);
       } else {
-        // If style already exists, don't add to an array, but don't lose other styles
-        merged[name] = combined[name];
+        merged[name] = combined[name]; // If style already exists, don't add to an array, but don't lose other styles
       }
     } else {
-      merged[name] = [combined[name], formats[name]];
+      if (formats[name]) {
+        merged[name] = [combined[name], formats[name]];
+      } else {
+        merged[name] = combined[name];
+      }
     }
-    return merged;
-  }, {});
+  });
+
+  Object.keys(formats).forEach(name => {
+    if (!combined[name] && formats[name] != null) {
+      merged[name] = formats[name];
+    }
+  });
+
+  return merged;
 }
 
 function getListType(type) {
