@@ -181,7 +181,7 @@ class Editor {
     const [lineFormats, leafFormats] = [lines, leaves].map(blots => {
       if (blots.length === 0) return {};
       let formats = bubbleFormats(blots.shift());
-      while (Object.keys(formats).length > 0) {
+      while (blots.length > 0) {
         const blot = blots.shift();
         if (blot == null) return formats;
         formats = combineFormats(bubbleFormats(blot), formats);
