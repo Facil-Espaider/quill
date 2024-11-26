@@ -504,7 +504,9 @@ class Quill {
     length?: number,
   ): string {
     if (typeof index === 'number') {
-      length = this.getLength() - index;
+      if (length === undefined) {
+        length = this.getLength() - index;
+      }
     }
     // @ts-expect-error
     [index, length] = overload(index, length);
