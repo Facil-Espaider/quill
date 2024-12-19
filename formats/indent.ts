@@ -23,10 +23,11 @@ class IndentAttributor extends ClassAttributor {
   }
 }
 
+const whitelist = Array.from({ length: 21 }, (_, i) => i - 10);
 const IndentClass = new IndentAttributor('indent', 'ql-indent', {
   scope: Scope.BLOCK,
   // @ts-expect-error
-  whitelist: [1, 2, 3, 4, 5, 6, 7, 8],
+  whitelist: whitelist,
 });
 
 export default IndentClass;

@@ -125,15 +125,15 @@ resets(arr)
         @supports not (counter-set: none)
           counter-reset: resets((num+1)..MAX_INDENT)
 
-  for num in (1..MAX_INDENT)
-    .ql-indent-{num}:not(.ql-direction-rtl):not(.ql-custom_list)
-      padding-left: (3*num)em !important
-    li.ql-indent-{num}:not(.ql-direction-rtl):not(.ql-custom_list)
-      padding-left: (3*num + LIST_STYLE_OUTER_WIDTH)em
-    .ql-indent-{num}.ql-direction-rtl.ql-align-right
-      padding-right: (3*num)em !important
-    li.ql-indent-{num}.ql-direction-rtl.ql-align-right
-      padding-right: (3*num + LIST_STYLE_OUTER_WIDTH)em
+for num in (-10..10)
+  .ql-indent-{num}:not(.ql-direction-rtl):not(.ql-custom_list)
+    margin-left: (num * 0.77946)em !important
+  li.ql-indent-{num}:not(.ql-direction-rtl):not(.ql-custom_list)
+    margin-left: (num * 0.77946 + LIST_STYLE_OUTER_WIDTH)em
+  .ql-indent-{num}.ql-direction-rtl.ql-align-right
+    margin-right: (num * 0.77946)em !important
+  li.ql-indent-{num}.ql-direction-rtl.ql-align-right
+    margin-right: (num * 0.77946 + LIST_STYLE_OUTER_WIDTH)em
 
   li.ql-direction-rtl
     padding-right: LIST_STYLE_OUTER_WIDTH

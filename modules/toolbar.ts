@@ -168,10 +168,12 @@ class Toolbar extends Module<ToolbarProps> {
         // both being null should match (default values)
         // '1' should match with 1 (headers)
         const isActive =
-          formats[format] === input.getAttribute('value') ||
-          (formats[format] != null &&
-            formats[format].toString() === input.getAttribute('value')) ||
-          (formats[format] == null && !input.getAttribute('value'));
+          (formats[format] === input.getAttribute('value') ||
+            (formats[format] != null &&
+              formats[format].toString() === input.getAttribute('value')) ||
+            (formats[format] == null && !input.getAttribute('value'))) &&
+          format != 'indent';
+
         input.classList.toggle('ql-active', isActive);
       } else {
         input.classList.toggle('ql-active', formats[format] != null);
