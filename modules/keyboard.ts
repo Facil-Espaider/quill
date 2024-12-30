@@ -350,6 +350,18 @@ class Keyboard extends Module<KeyboardOptions> {
       },
       {},
     );
+    const inlineFormats = Object.keys(context.format).reduce(
+      (formats, format) => {
+        if (
+          this.quill.scroll.query(format, Scope.INLINE) && // Verifica formatos inline
+          !Array.isArray(context.format[format])
+        ) {
+          formats[format] = context.format[format];
+        }
+        return formats;
+      },
+      {},
+    );
     const delta = new Delta()
       .retain(range.index)
       .delete(range.length)
@@ -357,6 +369,9 @@ class Keyboard extends Module<KeyboardOptions> {
     this.quill.updateContents(delta, Quill.sources.USER);
     this.quill.setSelection(range.index + 1, Quill.sources.SILENT);
     this.quill.focus();
+    for (const format in inlineFormats) {
+      this.quill.format(format, inlineFormats[format], Quill.sources.USER);
+    }
   }
 
   getIsRevisionModeVariable(): boolean {
