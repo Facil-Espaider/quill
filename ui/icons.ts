@@ -16,16 +16,19 @@ import header2Icon from '../assets/icons/header-2.svg';
 import italicIcon from '../assets/icons/italic.svg';
 import imageIcon from '../assets/icons/image.svg';
 import indentIcon from '../assets/icons/indent.svg';
+import matchCase from '../assets/icons/match-case.svg';
 import outdentIcon from '../assets/icons/outdent.svg';
 import linkIcon from '../assets/icons/link.svg';
 import listBulletIcon from '../assets/icons/list-bullet.svg';
 import listCheckIcon from '../assets/icons/list-check.svg';
 import listOrderedIcon from '../assets/icons/list-ordered.svg';
+import lowercase from '../assets/icons/lowercase.svg';
 import subscriptIcon from '../assets/icons/subscript.svg';
 import superscriptIcon from '../assets/icons/superscript.svg';
 import strikeIcon from '../assets/icons/strike.svg';
 import tableIcon from '../assets/icons/table.svg';
 import underlineIcon from '../assets/icons/underline.svg';
+import uppercase from '../assets/icons/uppercase.svg';
 import videoIcon from '../assets/icons/video.svg';
 
 export default {
@@ -69,6 +72,11 @@ export default {
   },
   strike: strikeIcon,
   table: tableIcon,
+  textTransform: {
+    '': matchCase,
+    lowercase: lowercase,
+    uppercase: uppercase,
+  },
   underline: underlineIcon,
   video: videoIcon,
 };

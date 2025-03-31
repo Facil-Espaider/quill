@@ -14,6 +14,7 @@ import Uploader from '../modules/uploader';
 import Selection from '../core/selection';
 
 const ALIGNS = [false, 'center', 'right', 'justify'];
+const TEXTTRANSFORM = [false, 'uppercase', 'lowercase'];
 
 const COLORS = [
   '#000000',
@@ -137,6 +138,13 @@ class BaseTheme extends Theme {
         }
         // @ts-expect-error
         return new IconPicker(select, icons.align);
+      }
+      if (select.classList.contains('ql-text_transform')) {
+        if (select.querySelector('option') == null) {
+          fillSelect(select, TEXTTRANSFORM);
+        }
+        // @ts-expect-error
+        return new IconPicker(select, icons.textTransform);
       }
       if (
         select.classList.contains('ql-background') ||
