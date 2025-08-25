@@ -391,7 +391,9 @@ class Scroll extends ScrollBlot {
     Object.entries(attributes).forEach(([key, value]) => {
       const isBlockBlot = this.query(key, Scope.BLOCK & Scope.BLOT) != null;
       if (isBlockBlot) {
-        blotName = key;
+        if (blotName != 'table-cell-line') {
+          blotName = key;
+        }
       } else {
         formats[key] = value;
       }
