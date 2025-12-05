@@ -395,6 +395,17 @@ const defaultOptions: KeyboardOptions = {
       key: 'Tab',
       format: ['blockquote', 'indent', 'list'],
       handler(range, context) {
+        if (
+          context.format.table ||
+          context.format['custom_list'] ||
+          context.format['revision-list-item'] ||
+          (window['isRevisionMode'] === true &&
+            (context.format['list'] ||
+              context.format['indent'] ||
+              range.length > 0))
+        ) {
+          return true;
+        }
         if (context.collapsed && context.offset !== 0) return true;
         this.quill.format('indent', '+1', Quill.sources.USER);
         return false;
@@ -406,6 +417,17 @@ const defaultOptions: KeyboardOptions = {
       format: ['blockquote', 'indent', 'list'],
       // highlight tab or tab at beginning of list, indent or blockquote
       handler(range, context) {
+        if (
+          context.format.table ||
+          context.format['custom_list'] ||
+          context.format['revision-list-item'] ||
+          (window['isRevisionMode'] === true &&
+            (context.format['list'] ||
+              context.format['indent'] ||
+              range.length > 0))
+        ) {
+          return true;
+        }
         if (context.collapsed && context.offset !== 0) return true;
         this.quill.format('indent', '-1', Quill.sources.USER);
         return false;
