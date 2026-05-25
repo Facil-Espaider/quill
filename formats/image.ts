@@ -1,7 +1,16 @@
 import { EmbedBlot } from 'parchment';
 import { sanitize } from './link';
 
-const ATTRIBUTES = ['alt', 'height', 'width', 'naturalWidth'];
+const ATTRIBUTES = [
+  'alt',
+  'height',
+  'width',
+  'naturalWidth',
+  'behindText',
+  'wrapType',
+  'top',
+  'left',
+];
 
 class Image extends EmbedBlot {
   static blotName = 'image';
@@ -50,7 +59,7 @@ class Image extends EmbedBlot {
 
   format(name, value) {
     if (ATTRIBUTES.indexOf(name) > -1) {
-      if (value) {
+      if (value != null) {
         this.domNode.setAttribute(name, value);
       } else {
         this.domNode.removeAttribute(name);
