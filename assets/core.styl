@@ -109,6 +109,9 @@ resets(arr)
     @supports not (counter-set: none)
       counter-reset: resets(1..MAX_INDENT)
 
+  li:not([class*="ql-indent-"]):not(.ql-custom_list)
+    margin-left: LIST_STYLE_OUTER_WIDTH em
+
   li[data-list=ordered]
     counter-increment: list-0
     > .ql-ui:before
@@ -126,21 +129,21 @@ resets(arr)
           counter-reset: resets((num+1)..MAX_INDENT)
 
 for num in (-10..10)
-  .ql-indent-{num}:not(.ql-direction-rtl):not(.ql-custom_list)
+  .ql-indent-{num}:not(.ql-direction-rtl):not(li)
     margin-left: (num * 0.77946)em !important
   li.ql-indent-{num}:not(.ql-direction-rtl):not(.ql-custom_list)
-    margin-left: (num * 0.77946 + LIST_STYLE_OUTER_WIDTH)em
+    margin-left: (3 * num + LIST_STYLE_OUTER_WIDTH)em
   .ql-indent-{num}.ql-direction-rtl.ql-align-right
     margin-right: (num * 0.77946)em !important
   li.ql-indent-{num}.ql-direction-rtl.ql-align-right
-    margin-right: (num * 0.77946 + LIST_STYLE_OUTER_WIDTH)em
+    margin-right: (3 * num + LIST_STYLE_OUTER_WIDTH)em
 
-  li.ql-direction-rtl
-    padding-right: LIST_STYLE_OUTER_WIDTH
-    > .ql-ui:before
-      margin-left: LIST_STYLE_MARGIN
-      margin-right: -1*LIST_STYLE_OUTER_WIDTH
-      text-align: left
+    li.ql-direction-rtl
+      padding-right: LIST_STYLE_OUTER_WIDTH
+      > .ql-ui:before
+        margin-left: LIST_STYLE_MARGIN
+        margin-right: -1*LIST_STYLE_OUTER_WIDTH
+        text-align: left
 
   table
     table-layout: fixed

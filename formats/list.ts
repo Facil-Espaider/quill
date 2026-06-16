@@ -48,6 +48,32 @@ class ListItem extends Block {
       super.format(name, value);
     }
   }
+
+  optimize(context) {
+    const element = this.domNode;
+    const parent = element.closest('ol, ul');
+    const marginLeft = parseFloat(getComputedStyle(element).marginLeft) || 0;
+    const paddingLeft = parseFloat(getComputedStyle(element).paddingLeft) || 0;
+    const elementMargin = marginLeft + paddingLeft;
+    let parentPaddingLeft = 0;
+    if (parent) {
+      parentPaddingLeft = parseFloat(getComputedStyle(parent).paddingLeft) || 0;
+    }
+
+    const embeddedMarginCalculation = elementMargin + parentPaddingLeft;
+    if (embeddedMarginCalculation > 0) {
+      const inlineMargin = `${embeddedMarginCalculation}px`;
+      if (element.getAttribute('data-list-margin-left') !== inlineMargin) {
+        element.setAttribute('data-list-margin-left', inlineMargin);
+      }
+    } else {
+      if (element.hasAttribute('data-list-margin-left')) {
+        element.removeAttribute('data-list-margin-left');
+      }
+    }
+
+    super.optimize(context);
+  }
 }
 ListItem.blotName = 'list';
 ListItem.tagName = 'LI';
