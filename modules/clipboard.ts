@@ -112,16 +112,23 @@ class Clipboard extends Module<ClipboardOptions> {
     if (!html) {
       if (text) {
         const deltaSplit = new Delta();
-        for (const textPart of text.split('\n')) {
-          deltaSplit.insert(textPart).insert('\n', {
-            spacing_before: '0px',
-            spacing_after: '0px',
-            indent_right: '0px',
-            indent_left: '0px',
-            text_indent: '0px',
-            line_spacing: '16px',
-          });
-        }
+        // Normaliza CRLF/CR do Bloco de Notas e quebra em linhas.
+        const lines = text.replace(/\r\n?/g, '\n').split('\n');
+        lines.forEach((textPart, index) => {
+          deltaSplit.insert(textPart);
+          // Insere a quebra apenas ENTRE as linhas, nunca após a última,
+          // senão cada colagem acrescenta um parágrafo em branco a mais.
+          if (index < lines.length - 1) {
+            deltaSplit.insert('\n', {
+              spacing_before: '0px',
+              spacing_after: '0px',
+              indent_right: '0px',
+              indent_left: '0px',
+              text_indent: '0px',
+              line_spacing: '16px',
+            });
+          }
+        });
         return deltaSplit;
       }
       return new Delta().insert(text || '');
