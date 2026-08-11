@@ -10,6 +10,11 @@ const ATTRIBUTES = [
   'wrapType',
   'top',
   'left',
+  // Âncoras da forma no Word (página x margem). Sem elas na lista, o Delta perde a referência de
+  // posicionamento da imagem ao passar pelo editor, e o cabeçalho/rodapé importado do Word volta
+  // a renderizar as imagens flutuantes fora da faixa visível.
+  'relative-h',
+  'relative-v',
 ];
 
 class Image extends EmbedBlot {
